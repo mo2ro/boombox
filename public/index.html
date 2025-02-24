@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Music Player</title>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="jsmediatags.min.js"></script>
+  </head>
+  <body>
+    <h1 id="folder-name">Playlist</h1>
+
+    <div class="playlist-container">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Song Name</th>
+            <th>Artist</th>
+            <th>Duration</th>
+          </tr>
+        </thead>
+        <tbody id="playlist"></tbody>
+      </table>
+    </div>
+
+    <div class="media-controls hidden" id="media-controls">
+      <div id="current-song-info">
+        <img id="current-cover" src="" alt="Album Cover" />
+        <div>
+          <span id="current-title"></span><br />
+          <span id="current-artist"></span>
+        </div>
+      </div>
+      <button onclick="prevSong()">⏮️</button>
+      <button onclick="togglePlay()">▶️</button>
+      <input type="range" id="seek-bar" min="0" value="0" />
+      <button onclick="toggleLoop()">🔁</button>
+      <button onclick="nextSong()">⏭️</button>
+    </div>
+
+    <script>
+      let audioPlayer = new Audio();
+      let currentSong = null;
+      let isLooping = false;
+      let playlist = [];
+      let currentSongIndex = -1;
+
+      async function loadPlaylist() {
+        const response = await fetch("/playlist");
+        const data = await response.json();
+        document.getElementById("folder-name").innerText =
+          data.folderName || "Playlist";
+        window.player = { folder: data.folderName };
+
+        const playlistTable = document.getElementById("playlist");
+        playlistTable.innerHTML = ""; // Clear existing content
+        playlist = data.files;
+        currentSongIndex = -1; // Reset current song index
+
+        if (playlist.length === 0) {
+          playlistTable.innerHTML =
+            '<tr><td colspan="4">No songs available</td></tr>';
+          return;
+        }
+
+        playlist.forEach((song, index) => {
+          const row = document.createElement("tr");
+          const filePath = `/${player.folder}/${song}`;
+
+          row.innerHTML = `
+                    <td><img src="" class="cover" data-src="${filePath}"></td>
+                    <td class="title">${song.replace(".mp3", "")}</td>
+                    <td class="artist">Unknown</td>
+                    <td class="duration">--:--</td>
+                `;
+
+          row.addEventListener("click", () => playSong(filePath, index, row));
+          playlistTable.appendChild(row);
+
+          fetchMetadata(filePath, row);
+          fetchDuration(filePath, row);
+        });
+      }
+
+      async function fetchMetadata(filePath, row) {
+        try {
+          const response = await fetch(filePath);
+          const blob = await response.blob();
+
+          jsmediatags.read(blob, {
+            onSuccess: (tag) => {
+              if (tag.tags.title)
+                row.querySelector(".title").innerText = tag.tags.title;
+              if (tag.tags.artist)
+                row.querySelector(".artist").innerText = tag.tags.artist;
+
+              if (tag.tags.picture) {
+                let { data, format } = tag.tags.picture;
+                let base64String = "";
+                for (let i = 0; i < data.length; i++) {
+                  base64String += String.fromCharCode(data[i]);
+                }
+                let imageData = `data:${format};base64,${btoa(base64String)}`;
+                row.querySelector(".cover").src = imageData;
+              } else {
+                row.querySelector(".cover").src = "default-cover.png"; // Fallback cover
+              }
+            },
+            onError: (error) => {
+              console.log("Metadata read error:", error);
+            },
+          });
+        } catch (error) {
+          console.error("Error fetching metadata:", error);
+        }
+      }
+
+      async function fetchDuration(filePath, row) {
+        const audio = new Audio(filePath);
+
+        audio.onloadedmetadata = function () {
+          const durationInSeconds = audio.duration;
+          const minutes = Math.floor(durationInSeconds / 60);
+          const seconds = Math.floor(durationInSeconds % 60);
+          row.querySelector(".duration").innerText = `${minutes}:${
+            seconds < 10 ? "0" + seconds : seconds
+          }`;
+        };
+
+        // In case of errors
+        audio.onerror = function () {
+          row.querySelector(".duration").innerText = "--:--";
+          console.error("Error loading audio file:", filePath);
+        };
+      }
+      function playSong(filePath, index, row) {
+        if (currentSong === filePath) {
+          togglePlay();
+          return;
+        }
+
+        onkeypress = (e) => {
+          if (e.keyCode == 32) {
+            togglePlay();
+          }
+        };
+        document
+          .querySelectorAll("#playlist tr")
+          .forEach((r) => r.classList.remove("playing"));
+
+        row.classList.add("playing");
+
+        currentSong = filePath;
+        currentSongIndex = index;
+        audioPlayer.src = filePath;
+        audioPlayer.play();
+
+        document.getElementById("current-title").innerText =
+          row.querySelector(".title").innerText;
+        document.getElementById("current-artist").innerText =
+          row.querySelector(".artist").innerText;
+        document.getElementById("current-cover").src =
+          row.querySelector(".cover").src || "";
+        document.getElementById("media-controls").classList.remove("hidden");
+
+        document.querySelector("button[onclick='togglePlay()']").innerText =
+          "⏸";
+
+        updateSeekBar();
+      }
+
+      function togglePlay() {
+        if (audioPlayer.paused) {
+          audioPlayer.play();
+          document.querySelector("button[onclick='togglePlay()']").innerText =
+            "⏸";
+        } else {
+          audioPlayer.pause();
+          document.querySelector("button[onclick='togglePlay()']").innerText =
+            "▶️";
+        }
+      }
+
+      function toggleLoop() {
+        isLooping = !isLooping;
+        audioPlayer.loop = isLooping;
+      }
+
+      function prevSong() {
+        if (currentSongIndex > 0) {
+          const prevIndex = currentSongIndex - 1;
+          playSong(
+            `/${player.folder}/${playlist[prevIndex]}`,
+            prevIndex,
+            document.querySelector(`#playlist tr:nth-child(${prevIndex + 1})`)
+          );
+        }
+      }
+
+      function nextSong() {
+        if (currentSongIndex < playlist.length - 1) {
+          const nextIndex = currentSongIndex + 1;
+          playSong(
+            `/${player.folder}/${playlist[nextIndex]}`,
+            nextIndex,
+            document.querySelector(`#playlist tr:nth-child(${nextIndex + 1})`)
+          );
+        }
+      }
+
+      onclick = () => {
+        setTimeout(() => {
+          document.querySelector("#seek-bar").max = audioPlayer.duration;
+        }, 100);
+      };
+
+      function updateSeekBar() {
+        const seekBar = document.getElementById("seek-bar");
+
+        audioPlayer.ontimeupdate = function () {
+          seekBar.value = audioPlayer.currentTime;
+        };
+
+        seekBar.addEventListener("input", function () {
+          audioPlayer.currentTime = seekBar.value;
+        });
+      }
+
+      document.addEventListener("DOMContentLoaded", loadPlaylist);
+    </script>
+  </body>
+</html>

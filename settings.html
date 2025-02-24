@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Settings</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        max-width: 500px;
+        margin: 20px auto;
+        padding: 20px;
+        background: #f8f9fa;
+        border-radius: 10px;
+        box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        text-align: center;
+      }
+      .form-group {
+        margin-bottom: 15px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+      input[type="text"],
+      input[type="number"] {
+        width: 60%;
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      .switch {
+        position: relative;
+        display: inline-block;
+        width: 40px;
+        height: 20px;
+      }
+      .switch input {
+        display: none;
+      }
+      .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        transition: 0.3s;
+        border-radius: 20px;
+      }
+      .slider:before {
+        position: absolute;
+        content: "";
+        height: 14px;
+        width: 14px;
+        left: 3px;
+        bottom: 3px;
+        background-color: white;
+        transition: 0.3s;
+        border-radius: 50%;
+      }
+      input:checked + .slider {
+        background-color: #4caf50;
+      }
+      input:checked + .slider:before {
+        transform: translateX(20px);
+      }
+      button {
+        display: block;
+        width: 100%;
+        padding: 10px;
+        background: #312321;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        margin-top: 10px;
+      }
+      button:hover {
+        background: #0056b3;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Settings</h1>
+    <form id="configForm"></form>
+    <button id="saveBtn">Save</button>
+
+    <script>
+      async function loadConfig() {
+        const response = await fetch("/api/config");
+        const config = await response.json();
+        const form = document.getElementById("configForm");
+        form.innerHTML = ""; // Clear previous entries
+
+        Object.entries(config).forEach(([key, value]) => {
+          const div = document.createElement("div");
+          div.className = "form-group";
+
+          const label = document.createElement("label");
+          label.innerText = key;
+
+          if (typeof value === "boolean") {
+            // Create a toggle switch
+            const switchContainer = document.createElement("label");
+            switchContainer.className = "switch";
+
+            const input = document.createElement("input");
+            input.type = "checkbox";
+            input.checked = value;
+            input.id = key;
+
+            const slider = document.createElement("span");
+            slider.className = "slider";
+
+            switchContainer.appendChild(input);
+            switchContainer.appendChild(slider);
+
+            div.appendChild(label);
+            div.appendChild(switchContainer);
+          } else {
+            // Create a text or number input
+            const input = document.createElement("input");
+            input.type = typeof value === "number" ? "number" : "text";
+            input.value = value;
+            input.id = key;
+
+            div.appendChild(label);
+            div.appendChild(input);
+          }
+
+          form.appendChild(div);
+        });
+      }
+
+      document.getElementById("saveBtn").addEventListener("click", async () => {
+        const formData = {};
+        document.querySelectorAll("#configForm input").forEach((input) => {
+          formData[input.id] =
+            input.type === "checkbox"
+              ? input.checked
+              : input.type === "number"
+              ? Number(input.value)
+              : input.value;
+        });
+
+        const res = await fetch("/api/config", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
+
+        alert((await res.json()).message);
+      });
+
+      loadConfig(); // Load config on page load
+    </script>
+  </body>
+</html>
