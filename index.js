@@ -6,20 +6,17 @@ const configPath = path.join(__dirname, "config.json");
 const app = express();
 const port = 3000;
 
-// Configure static files
+let config = JSON.parse(fs.readFileSync(configPath, "utf8"));
+app.use(
+  config["playlist directory"].split(".")[1],
+  express.static(path.join(__dirname, config["playlist directory"]))
+);
+console.log(config["playlist directory"].split(".")[1]);
 app.use(express.static("public"));
 app.use(express.json());
 
-function loadConfig() {
-  if (!fs.existsSync(configPath)) {
-    fs.writeFileSync(configPath, JSON.stringify({}, null, 4));
-  }
-  return JSON.parse(fs.readFileSync(configPath, "utf8"));
-}
-
-let config = loadConfig();
 let dtpf = `${config["playlist directory"]}`;
-app.use(`/${dtpf}`, express.static(path.join(__dirname, `/${dtpf}`)));
+
 console.log(dtpf);
 const playlistDirectory = path.join(__dirname, dtpf);
 const folderName = path.basename(playlistDirectory);

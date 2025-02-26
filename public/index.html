@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Music Player</title>
+    <title>boombox</title>
     <link rel="stylesheet" href="styles.css" />
     <script src="jsmediatags.min.js"></script>
   </head>
@@ -69,7 +69,7 @@
           const filePath = `/${player.folder}/${song}`;
 
           row.innerHTML = `
-                    <td><img src="" class="cover" data-src="${filePath}"></td>
+                    <td><img src="default-cover.png" class="cover" data-src="${filePath}"></td>
                     <td class="title">${song.replace(".mp3", "")}</td>
                     <td class="artist">Unknown</td>
                     <td class="duration">--:--</td>
@@ -216,14 +216,22 @@
             nextIndex,
             document.querySelector(`#playlist tr:nth-child(${nextIndex + 1})`)
           );
+        } else {
+          playSong(
+            `/${player.folder}/${playlist[0]}`,
+            0,
+            document.querySelector(`#playlist tr:nth-child(1)`)
+          );
         }
       }
 
       onclick = () => {
         setTimeout(() => {
           document.querySelector("#seek-bar").max = audioPlayer.duration;
-        }, 100);
+        }, 500);
       };
+
+      audioPlayer.addEventListener("ended", nextSong);
 
       function updateSeekBar() {
         const seekBar = document.getElementById("seek-bar");
