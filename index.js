@@ -1,7 +1,6 @@
 const express = require("express");
 const fs = require("fs");
 const path = require("path");
-const multer = require("multer");
 
 const configPath = path.join(__dirname, "config.json");
 const app = express();
@@ -20,7 +19,6 @@ function loadConfig() {
 
 let config = loadConfig();
 let dtpf = `${config["playlist directory"]}`;
-// Set the playlist directory
 app.use(`/${dtpf}`, express.static(path.join(__dirname, `/${dtpf}`)));
 console.log(dtpf);
 const playlistDirectory = path.join(__dirname, dtpf);
@@ -30,13 +28,6 @@ const folderName = path.basename(playlistDirectory);
 if (!fs.existsSync(playlistDirectory)) {
   fs.mkdirSync(playlistDirectory, { recursive: true });
 }
-
-// Multer configuration for file uploads
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, playlistDirectory),
-  filename: (req, file, cb) => cb(null, file.originalname),
-});
-const upload = multer({ storage });
 
 // Endpoint to get playlist filenames
 app.get("/playlist", (req, res) => {
@@ -49,6 +40,10 @@ app.get("/playlist", (req, res) => {
     const audioFiles = files.filter((file) => file.endsWith(".mp3"));
     res.json({ folderName, files: audioFiles });
   });
+});
+
+app.get("/styles.css", (req, res) => {
+  res.sendFile(path.join(__dirname, config["theme path"]));
 });
 
 // Get Config

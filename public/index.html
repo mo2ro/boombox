@@ -197,6 +197,16 @@
           );
         }
       }
+      window.addEventListener("keydown", function () {
+        if (event.keyCode == 32) {
+          document.body.style.overflow = "hidden";
+        }
+      });
+      window.addEventListener("keyup", function () {
+        if (event.keyCode == 32) {
+          document.body.style.overflow = "auto";
+        }
+      });
 
       function nextSong() {
         if (currentSongIndex < playlist.length - 1) {

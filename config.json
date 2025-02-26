@@ -1,5 +1,5 @@
 {
-    "playlist directory": "./muzik!",
+    "playlist directory": "./uploads",
     "mute on tab unfocus": false,
-    "number": 0
+    "theme path": "./themes/default.css"
 }

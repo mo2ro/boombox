@@ -10,18 +10,20 @@
         max-width: 500px;
         margin: 20px auto;
         padding: 20px;
-        background: #f8f9fa;
+        background: #222222;
         border-radius: 10px;
         box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
       }
       h1 {
         text-align: center;
+        color: white;
       }
       .form-group {
         margin-bottom: 15px;
         display: flex;
         justify-content: space-between;
         align-items: center;
+        color: white;
       }
       input[type="text"],
       input[type="number"] {
@@ -29,6 +31,10 @@
         padding: 8px;
         border: 1px solid #ccc;
         border-radius: 5px;
+      }
+
+      html {
+        background: rgb(29, 29, 29);
       }
       .switch {
         position: relative;
@@ -157,5 +163,8 @@
 
       loadConfig(); // Load config on page load
     </script>
+    <span style="color: grey; font-size: 11px"
+      >The settings page can not be customized!</span
+    >
   </body>
 </html>
