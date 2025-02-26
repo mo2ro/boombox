@@ -43,7 +43,7 @@ app.get("/playlist", (req, res) => {
 });
 
 app.get("/styles.css", (req, res) => {
-  res.sendFile(path.join(__dirname, config["theme path"]));
+  res.sendFile(path.join(__dirname, "/themes/", config["theme path"]));
 });
 
 // Get Config

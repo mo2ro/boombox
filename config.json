@@ -1,5 +1,5 @@
 {
     "playlist directory": "./uploads",
     "mute on tab unfocus": false,
-    "theme path": "./themes/default.css"
+    "theme path": "default.css"
 }
