@@ -62,6 +62,8 @@ td img {
   display: flex;
   align-items: center;
   gap: 10px;
+  position: relative;
+  left: -10px;
 }
 
 #current-artist {
@@ -104,5 +106,69 @@ button {
   height: 36px;
 }
 
-img > button {
+button > img {
+  position: relative;
+  top: 2px;
+}
+
+img.low {
+  top: 0px;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 60%;
+  height: 4px;
+  background: #535353;
+  border-radius: 2px;
+  outline: none;
+  transition: background 0.3s;
+}
+
+/* Track */
+input[type="range"]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 4px;
+  background: #a30a0a
+  border-radius: 2px;
+}
+
+/* Thumb */
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-radius: 50%;
+  cursor: pointer;
+  margin-top: -4px;
+  transition: transform 0.2s;
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  background: #fff;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+
+/* Active state */
+input[type="range"]:hover::-webkit-slider-thumb {
+  transform: scale(1.2);
+}
+
+input[type="range"]:hover::-moz-range-thumb {
+  transform: scale(1.2);
+}
+
+
+input[type="range"]::-webkit-slider-runnable-track {
+  background: linear-gradient(
+    to right,
+    #a30a0a var(--progress)
+  );
 }
