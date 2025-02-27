@@ -100,4 +100,9 @@ button {
   outline: 2px solid white;
   border: none;
   border-radius: 20px;
+  width: 36px;
+  height: 36px;
+}
+
+img > button {
 }

@@ -32,11 +32,11 @@
           <span id="current-artist"></span>
         </div>
       </div>
-      <button onclick="prevSong()">⏮️</button>
-      <button onclick="togglePlay()">▶️</button>
+      <button onclick="prevSong()" style="color:white;">⏮</button>
+      <button onclick="togglePlay()" style="color:white;">▶</button>
       <input type="range" id="seek-bar" min="0" value="0" />
-      <button onclick="toggleLoop()">🔁</button>
-      <button onclick="nextSong()">⏭️</button>
+      <button onclick="toggleLoop()" style="color:white;"><img src="/svg/loop.svg"></img></button>
+      <button onclick="nextSong()" style="color:white;"><img src="/svg/forward.svg"></img></button>
     </div>
 
     <script>
@@ -174,12 +174,12 @@
       function togglePlay() {
         if (audioPlayer.paused) {
           audioPlayer.play();
-          document.querySelector("button[onclick='togglePlay()']").innerText =
-            "⏸";
+          document.querySelector("button[onclick='togglePlay()']").innerHTML =
+            "<img src='/svg/pause.svg'></img>";
         } else {
           audioPlayer.pause();
           document.querySelector("button[onclick='togglePlay()']").innerHTML =
-            "<img src='svg/'";
+            "▶";
         }
       }
 
