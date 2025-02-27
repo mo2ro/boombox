@@ -166,6 +166,7 @@
 
         document.querySelector("button[onclick='togglePlay()']").innerText =
           "⏸";
+        document.title = "boombox - " + row.querySelector(".title").innerText;
 
         updateSeekBar();
       }
