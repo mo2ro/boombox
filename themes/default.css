@@ -85,7 +85,6 @@ td img {
   background-color: #474d53;
 }
 
-/* Prevent Space from scrolling */
 body::-webkit-scrollbar {
   display: none;
 }
@@ -109,6 +108,7 @@ button {
 button > img {
   position: relative;
   top: 2px;
+  color: white;
 }
 
 img.low {
@@ -126,15 +126,12 @@ input[type="range"] {
   transition: background 0.3s;
 }
 
-/* Track */
 input[type="range"]::-webkit-slider-runnable-track {
   width: 100%;
   height: 4px;
-  background: #a30a0a
   border-radius: 2px;
 }
 
-/* Thumb */
 input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
@@ -156,19 +153,10 @@ input[type="range"]::-moz-range-thumb {
   transition: transform 0.2s;
 }
 
-/* Active state */
 input[type="range"]:hover::-webkit-slider-thumb {
   transform: scale(1.2);
 }
 
 input[type="range"]:hover::-moz-range-thumb {
   transform: scale(1.2);
-}
-
-
-input[type="range"]::-webkit-slider-runnable-track {
-  background: linear-gradient(
-    to right,
-    #a30a0a var(--progress)
-  );
 }

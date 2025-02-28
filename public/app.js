@@ -12,9 +12,9 @@ async function loadPlaylist() {
   window.player = { folder: data.folderName };
 
   const playlistTable = document.getElementById("playlist");
-  playlistTable.innerHTML = ""; // Clear existing content
+  playlistTable.innerHTML = "";
   playlist = data.files;
-  currentSongIndex = -1; // Reset current song index
+  currentSongIndex = -1;
 
   if (playlist.length === 0) {
     playlistTable.innerHTML =
@@ -62,7 +62,7 @@ async function fetchMetadata(filePath, row) {
           let imageData = `data:${format};base64,${btoa(base64String)}`;
           row.querySelector(".cover").src = imageData;
         } else {
-          row.querySelector(".cover").src = "default-cover.png"; // Fallback cover
+          row.querySelector(".cover").src = "default-cover.png";
         }
       },
       onError: (error) => {
@@ -92,17 +92,17 @@ async function fetchDuration(filePath, row) {
     console.error("Error loading audio file:", filePath);
   };
 }
+onkeydown = (e) => {
+  if (e.key == " ") {
+    togglePlay();
+  }
+};
 function playSong(filePath, index, row) {
   if (currentSong === filePath) {
     togglePlay();
     return;
   }
 
-  onkeydown = (e) => {
-    if (e.key == " ") {
-      togglePlay();
-    }
-  };
   document
     .querySelectorAll("#playlist tr")
     .forEach((r) => r.classList.remove("playing"));
@@ -128,6 +128,10 @@ function playSong(filePath, index, row) {
 
   updateSeekBar();
 }
+
+setInterval(() => {
+  document.querySelector("#seek-bar").max = audioPlayer.duration;
+}, 500);
 
 function togglePlay() {
   if (audioPlayer.paused) {
