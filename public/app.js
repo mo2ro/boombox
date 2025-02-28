@@ -97,6 +97,31 @@ onkeydown = (e) => {
     togglePlay();
   }
 };
+
+if ("mediaSession" in navigator) {
+  navigator.mediaSession.setActionHandler("play", () => togglePlay());
+  navigator.mediaSession.setActionHandler("pause", () => togglePlay());
+  navigator.mediaSession.setActionHandler("previoustrack", () => prevSong());
+  navigator.mediaSession.setActionHandler("nexttrack", () => nextSong());
+}
+
+function updateMediaSessionMetadata(title, artist, cover) {
+  if ("mediaSession" in navigator) {
+    navigator.mediaSession.metadata = new MediaMetadata({
+      title: title,
+      artist: artist,
+      artwork: [
+        { src: cover, sizes: "96x96", type: "image/png" },
+        { src: cover, sizes: "128x128", type: "image/png" },
+        { src: cover, sizes: "192x192", type: "image/png" },
+        { src: cover, sizes: "256x256", type: "image/png" },
+        { src: cover, sizes: "384x384", type: "image/png" },
+        { src: cover, sizes: "512x512", type: "image/png" },
+      ],
+    });
+  }
+}
+
 function playSong(filePath, index, row) {
   if (currentSong === filePath) {
     togglePlay();
@@ -125,7 +150,7 @@ function playSong(filePath, index, row) {
   document.querySelector("button[onclick='togglePlay()']").innerHTML =
     "<img src='/svg/pause.svg'></img>";
   document.title = "boombox - " + row.querySelector(".title").innerText;
-
+  updateMediaSessionMetadata(title, artist, cover);
   updateSeekBar();
 }
 
