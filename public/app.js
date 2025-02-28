@@ -148,6 +148,11 @@ function togglePlay() {
 function toggleLoop() {
   isLooping = !isLooping;
   audioPlayer.loop = isLooping;
+  if (isLooping) {
+    document.querySelector(".low").style.filter = "invert(1)";
+  } else {
+    document.querySelector(".low").style.filter = "invert(0)";
+  }
 }
 
 function prevSong() {
