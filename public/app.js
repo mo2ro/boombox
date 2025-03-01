@@ -119,6 +119,7 @@ function updateMediaSessionMetadata(title, artist, cover) {
         { src: cover, sizes: "512x512", type: "image/png" },
       ],
     });
+    navigator.mediaSession.setActionHandler("previoustrack", () => prevSong());
   }
 }
 
@@ -192,6 +193,12 @@ function prevSong() {
       prevIndex,
       document.querySelector(`#playlist tr:nth-child(${prevIndex + 1})`)
     );
+  } else {
+    playSong(
+      `/${player.folder}/${playlist[playlist.length - 1]}`,
+      playlist.length,
+      document.querySelector(`#playlist tr:nth-child(${playlist.length})`)
+    );
   }
 }
 
@@ -241,9 +248,11 @@ audioPlayer.addEventListener("ended", nextSong);
 
 function updateSeekBar() {
   const seekBar = document.getElementById("seek-bar");
+  const time = document.getElementById("time")
 
   audioPlayer.ontimeupdate = function () {
     seekBar.value = audioPlayer.currentTime;
+    time.innerText = `${Math.floor(audioPlayer.currentTime / 60)}:${(Math.floor(audioPlayer.currentTime % 60)).toString().padStart(2, "0")}`
   };
 
   seekBar.addEventListener("input", function () {
