@@ -151,8 +151,8 @@ function playSong(filePath, index, row) {
     "<img src='/svg/pause.svg'></img>";
   document.title = "boombox - " + row.querySelector(".title").innerText;
   updateMediaSessionMetadata(
-    title,
-    artist,
+    row.querySelector(".title").innerText,
+    row.querySelector(".artist").innerText,
     row.querySelector(".cover").src || ""
   );
   updateSeekBar();
