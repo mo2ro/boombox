@@ -150,7 +150,11 @@ function playSong(filePath, index, row) {
   document.querySelector("button[onclick='togglePlay()']").innerHTML =
     "<img src='/svg/pause.svg'></img>";
   document.title = "boombox - " + row.querySelector(".title").innerText;
-  updateMediaSessionMetadata(title, artist, cover);
+  updateMediaSessionMetadata(
+    title,
+    artist,
+    row.querySelector(".cover").src || ""
+  );
   updateSeekBar();
 }
 
